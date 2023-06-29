@@ -25,6 +25,12 @@ export class UserService {
 
     }
 
+    async findUserByEmail(email: string) {
+        if (!email) return null;
+        const user = await this.userRepo.findOneBy({ email })
+        return user;
+    }
+
     async findAllUsers() {
         const [users, count] = await this.userRepo.findAndCount()
         return { users, count };

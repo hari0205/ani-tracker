@@ -1,9 +1,9 @@
-import { Controller, Body, Post, HttpException, HttpStatus, Session } from '@nestjs/common';
+import { Controller, Body, Post, HttpException, HttpStatus, Session, HttpCode, Res, Req } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { LoginDto } from './dtos/login.dto';
 import { AuthService } from './auth.service';
-import UserNotFoundException from '../user/exceptions/entity.exceptions';
+import { Response } from "express"
 
 @Controller('auth')
 export class AuthController {
@@ -20,10 +20,11 @@ export class AuthController {
     }
 
     @Post("login")
-    async login(@Body() loginDto: LoginDto, @Session() session: Record<string, any>) {
-        const user = await this.authService.login(loginDto);
-        if (!user) throw new HttpException("User not found", HttpStatus.NOT_FOUND)
-        session.userId = user.id;
+    @HttpCode(200)
+    async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
+        const token = await this.authService.login(loginDto);
+        if (!token) throw new HttpException("User not found", HttpStatus.NOT_FOUND)
+        res.cookie("Authoization", token, { maxAge: 1000 * 60 * 60 * 24, httpOnly: true })
         return {
             "statusCode": HttpStatus.OK,
             "message": "Login successful!"

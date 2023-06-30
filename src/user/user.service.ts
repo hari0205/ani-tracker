@@ -10,7 +10,7 @@ export class UserService {
     }
 
 
-    async create_user({ email, password, name }) {
+    async create_user({ email, password, name }: { email: string, password: string, name: string }) {
 
         const new_user = this.userRepo.create({ email, password, name });
 
@@ -19,9 +19,14 @@ export class UserService {
 
     async find_user(id: string) {
         if (!id) return null;
-        const user = await this.userRepo.findOneBy({ id })
+        const userQuery = this.userRepo.createQueryBuilder("user");
+        userQuery
+            .leftJoinAndSelect('user.animesWatching', 'watchlist') // LEFTJOIN 
+            .leftJoinAndSelect('watchlist.anime', 'anime')
+            .select(['user.id', 'user.name', 'watchlist.id', 'watchlist.status', 'anime.id', 'anime.name'])
+            .where('user.id = :userId', { userId: id })
 
-        return user;
+        return userQuery.getOne();
 
     }
 
@@ -31,8 +36,12 @@ export class UserService {
         return user;
     }
 
-    async findAllUsers() {
+    async findAllUserswithCount() {
         const [users, count] = await this.userRepo.findAndCount()
         return { users, count };
+    }
+
+    async findAllUsers() {
+        return this.userRepo.find()
     }
 }

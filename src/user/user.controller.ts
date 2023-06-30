@@ -20,4 +20,6 @@ export class UserController {
         if (!user) throw new HttpException(`User with given id not found. Please try again.`, HttpStatus.BAD_REQUEST)
         return user
     }
+
+
 }

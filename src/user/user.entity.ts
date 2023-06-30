@@ -1,31 +1,39 @@
 import { PrimaryGeneratedColumn, Column, Entity, Unique, BeforeInsert, OneToMany, CreateDateColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
-import { Anime } from "../anime/anime.entity";
-import { watchlist } from "../watchlist/watchlist.entity";
+import { Watchlist } from "../watchlist/watchlist.entity";
+import { ObjectType, Field, ID } from "@nestjs/graphql";
+import { GraphQLISODateTime } from "type-graphql";
 
 
 
 @Entity()
+@ObjectType()
 export class User {
 
     @PrimaryGeneratedColumn("uuid")
+    @Field(() => ID)
     id: string;
 
     @Column()
+    @Field()
     name: string;
 
     @Column({ unique: true })
+    @Field()
     email: string;
 
     @Column()
+    @Field()
     password: string;
 
     @CreateDateColumn({ select: false })
+    @Field(() => GraphQLISODateTime)
     createdAt: Date;
 
 
-    @OneToMany(() => watchlist, 'watchlist')
-    animesWatching: watchlist[];
+    @OneToMany(() => Watchlist, (watchlist) => (watchlist.user))
+    @Field(() => [Watchlist])
+    animesWatching: Promise<Watchlist[]>;
 
 
     @BeforeInsert()

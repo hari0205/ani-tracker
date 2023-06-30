@@ -9,14 +9,7 @@ async function bootstrap() {
     logger: ['error', 'debug', 'log', 'verbose']
   });
   app.useGlobalPipes(new ValidationPipe())
-  app.use(cookieParser());
-  app.use(session(
-    {
-      secret: "Somesecret",
-      resave: false,
-      saveUninitialized: false
-    }
-  ));
+  app.use(cookieParser())
   await app.listen(3000);
 }
 bootstrap();

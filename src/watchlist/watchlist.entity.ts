@@ -20,7 +20,6 @@ export class Watchlist {
 
     @ManyToOne(() => User, (user) => user.animesWatching)
     @Field(() => User)
-    @JoinColumn()
     user: Promise<User>;
 
     @ManyToOne(() => Anime, (anime) => anime.watchlist)

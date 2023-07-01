@@ -19,12 +19,12 @@ import { Anime } from "../anime/anime.entity";
 @Resolver(() => Watchlist)
 export class WatchListResolver {
 
-    @ResolveField("anime")
+    @ResolveField("anime", () => Anime)
     async anime(@Parent() watch: Watchlist) {
         return await watch.anime
     }
 
-    @ResolveField("user")
+    @ResolveField("user", () => User)
     async user(@Parent() watch: Watchlist) {
         return await watch.user
     }

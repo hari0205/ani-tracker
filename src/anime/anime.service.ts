@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Anime } from './anime.entity';
 import { Repository } from 'typeorm';
 import { CreateAnimeDto } from './dtos/create-anime.dto';
+import { UpdateAnimeDto } from './dtos/update-anime.dto';
 
 @Injectable()
 export class AnimeService {
@@ -26,5 +27,16 @@ export class AnimeService {
         return await this.animeRepo.save(newanime)
     }
 
+    async updateAnime(id: number, body: UpdateAnimeDto) {
+        const updatedAnime = await this.animeRepo.update({ id }, body);
+        if (!updatedAnime) return null;
+        return updatedAnime;
+    }
+
+    async deleteAnime(id: number) {
+        const deleteAnime = await this.animeRepo.delete(id);
+        if (!deleteAnime) return null;
+        return deleteAnime;
+    }
 
 }

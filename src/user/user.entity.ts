@@ -1,4 +1,4 @@
-import { PrimaryGeneratedColumn, Column, Entity, Unique, BeforeInsert, OneToMany, CreateDateColumn } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, Unique, BeforeInsert, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { Watchlist } from "../watchlist/watchlist.entity";
 import { ObjectType, Field, ID } from "@nestjs/graphql";
@@ -19,7 +19,7 @@ export class User {
     name: string;
 
     @Column({ unique: true })
-    @Field()
+    @Field({ nullable: false })
     email: string;
 
     @Column()
@@ -30,6 +30,9 @@ export class User {
     @Field(() => GraphQLISODateTime)
     createdAt: Date;
 
+    @UpdateDateColumn({ select: false })
+    @Field(() => GraphQLISODateTime)
+    updatedAt: Date;
 
     @OneToMany(() => Watchlist, (watchlist) => (watchlist.user))
     @Field(() => [Watchlist])

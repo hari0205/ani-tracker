@@ -1,6 +1,7 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, HttpException } from '@nestjs/common';
 import { AnimeService } from './anime.service';
 import { CreateAnimeDto } from './dtos/create-anime.dto';
+import { UpdateAnimeDto } from './dtos/update-anime.dto';
 
 @Controller('anime')
 export class AnimeController {
@@ -21,5 +22,18 @@ export class AnimeController {
         return this.animeService.findAnime(id);
     }
 
+    @Patch(":id")
+    async updateAnime(@Param("id") id: number, @Body() updateAnime: UpdateAnimeDto) {
+        const updatedAnime = await this.animeService.updateAnime(id, updateAnime);
+        if (!updatedAnime) throw new HttpException("Unable to update anime", 500)
+        return { message: "Anime details updated!" }
+    }
+
+    @Delete(":id")
+    async deleteAnime(@Param("id") id: number) {
+        const deltedAnime = await this.animeService.deleteAnime(id);
+        if (!deltedAnime) throw new HttpException("Unable to update anime", 500)
+        return { message: "Anime deleted!" }
+    }
 
 }

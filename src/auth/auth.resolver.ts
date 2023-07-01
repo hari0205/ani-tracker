@@ -1,5 +1,4 @@
 import { Resolver, Mutation, Args, Query } from "@nestjs/graphql"
-import { User } from "../user/user.entity";
 import { AuthService } from "./auth.service";
 import { AuthType } from "./auth.gql.type";
 import { LoginDto } from "./dtos/login.dto";
@@ -18,9 +17,11 @@ export class AuthResolver {
 
     }
 
-    @Query(() => AuthType)
-    getToken() {
-        return "Hello"
+    @Mutation(() => String)
+    async login(@Args("input") input: LoginDto): Promise<String> {
+        return await this.authService.login(input);
+
+
     }
 
 

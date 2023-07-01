@@ -27,7 +27,8 @@ export class AuthController {
         res.cookie("Authoization", token, { maxAge: 1000 * 60 * 60 * 24, httpOnly: true })
         return {
             "statusCode": HttpStatus.OK,
-            "message": "Login successful!"
+            "message": "Login successful!",
+            "token": token
         }
     }
 }

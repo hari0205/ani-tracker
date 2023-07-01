@@ -8,6 +8,6 @@ import { Field, ObjectType } from "@nestjs/graphql"
 @ObjectType()
 export class AuthType {
 
-    @Field()
+    @Field({ nullable: true })
     token?: string;
 }

@@ -13,42 +13,16 @@ export class WatchlistService {
         @InjectRepository(Anime) private readonly animeRepo: Repository<Anime>) { }
 
     async getAllWatchlistwithCount() {
-        const [watchLists, count] = await this.watchListRepo.findAndCount({
+        const watchlists = await this.watchListRepo.findAndCount({
             relations: ["user", "anime"],
-            select: {
-                anime: {
-                    id: true,
-                    romanjiName: true,
-                    totalEpisodes: true
-                },
-                user: {
-                    id: true,
-                    name: true
-
-                }
-            }
-
         })
-        return [watchLists, count];
+        return watchlists;
 
     }
 
     async getAllWatchList() {
         return await this.watchListRepo.find({
             relations: ["user", "anime"],
-            select: {
-                anime: {
-                    id: true,
-                    romanjiName: true,
-                    totalEpisodes: true
-                },
-                user: {
-                    id: true,
-                    name: true
-
-                }
-            }
-
         })
 
 
@@ -58,18 +32,6 @@ export class WatchlistService {
         const watchlist = await this.watchListRepo.findOne({
             where: { id },
             relations: ["user", "anime"],
-            select: {
-                anime: {
-                    id: true,
-                    romanjiName: true,
-                    totalEpisodes: true
-                },
-                user: {
-                    id: true,
-                    name: true
-
-                }
-            }
         })
         if (!watchlist) {
             return new HttpException("Watchlist not found", HttpStatus.NOT_FOUND)

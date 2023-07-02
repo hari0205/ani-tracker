@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post } from
 import { WatchlistService } from './watchlist.service';
 import { CreateWatchListDto } from './dtos/create-watchlis.dto';
 import { UpdateWatchListDto } from './dtos/update-watchlist.dto';
+import { Watchlist } from './watchlist.entity';
 
 @Controller('watchlist')
 export class WatchlistController {
@@ -10,11 +11,26 @@ export class WatchlistController {
 
     @Get()
     async getWatchAlllist() {
-        const [watchlists, count] = await this.watchlistService.getAllWatchlistwithCount()
-        return {
-            data: watchlists,
-            count
-        }
+        const [watchlists, count]: [Watchlist[], number] = await this.watchlistService.getAllWatchlistwithCount()
+        const filteredWatchlist = await Promise.all(watchlists.map(async (watchlist) => {
+            const { id, status, user, anime } = watchlist;
+
+            const resolvedUser = await user
+            const userObj = { id: resolvedUser.id, name: resolvedUser.name }
+
+            const resolvedAnime = await anime
+            const animeObj = { id: resolvedAnime.id, name: resolvedAnime.name }
+
+            return { id, status, user: userObj, anime: animeObj };
+        })
+
+        )
+
+        return { data: filteredWatchlist, count };
+
+
+
+
     }
 
     @Get(":id")

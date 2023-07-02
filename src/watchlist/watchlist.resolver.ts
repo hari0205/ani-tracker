@@ -1,8 +1,9 @@
-import { Resolver, Query, ResolveField, Parent, Args, Int } from "@nestjs/graphql";
+import { Resolver, Query, ResolveField, Parent, Args, Int, Mutation } from "@nestjs/graphql";
 import { Watchlist } from "./watchlist.entity";
 import { User } from "src/user/user.entity";
 import { WatchlistService } from "./watchlist.service";
 import { Anime } from "../anime/anime.entity";
+import { UpdateWatchListDto } from "./dtos/update-watchlist.dto";
 
 
 
@@ -19,6 +20,8 @@ import { Anime } from "../anime/anime.entity";
 @Resolver(() => Watchlist)
 export class WatchListResolver {
 
+    constructor(private readonly watchlistService: WatchlistService) { }
+
     @ResolveField("anime", () => Anime)
     async anime(@Parent() watch: Watchlist) {
         return await watch.anime
@@ -29,7 +32,6 @@ export class WatchListResolver {
         return await watch.user
     }
 
-    constructor(private readonly watchlistService: WatchlistService) { }
     @Query(() => [Watchlist])
     async getAllWatchlist() {
         const watchlists = await this.watchlistService.getAllWatchList();
@@ -40,5 +42,20 @@ export class WatchListResolver {
     async getWatchlist(@Args("id", { type: () => Int }) id: number) {
         const watchlist = await this.watchlistService.getWatchlistById(id);
         return watchlist;
+    }
+
+    @Mutation(() => String)
+    async updateWatchlist(@Args("id", { type: () => Int }) id: number, @Args("input") input: UpdateWatchListDto) {
+        const watchlist = await this.watchlistService.updateWatchlist(id, input);
+        if (!watchlist) return "Unable to update watchlist!";
+        return "Watchlist updated!"
+    }
+
+
+    @Mutation(() => String)
+    async deleteWatchlist(@Args("id", { type: () => Int }) id: number) {
+        const watchlist = await this.watchlistService.deleteWatchlist(id);
+        if (!watchlist) return "Unable to delete watchlist!";
+        return "Watchlist deleted!"
     }
 }

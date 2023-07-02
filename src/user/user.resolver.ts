@@ -1,6 +1,7 @@
-import { Args, ID, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import { Args, ID, Int, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { User } from "./user.entity";
 import { UserService } from "./user.service";
+import { UpdateUserDto } from "./dtos/update-user.dto";
 
 
 
@@ -32,4 +33,17 @@ export class UserResolver {
         return this.userService.findUserByEmail(EmailAddress);
     }
 
+    @Mutation(() => String)
+    async updateUser(@Args("id") id: string, @Args("input") input: UpdateUserDto) {
+        const user = this.userService.updateUser(id, input);
+        if (!user) return "Unable to update user!";
+        return "User Update Success!";
+    }
+
+    @Mutation(() => String)
+    async deleteUser(@Args("id") id: string) {
+        const user = this.userService.deleteUser(id);
+        if (!user) return "Unable to update user!";
+        return "User Update Success!";
+    }
 }

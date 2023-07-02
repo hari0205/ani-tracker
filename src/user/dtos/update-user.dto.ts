@@ -1,6 +1,7 @@
 import { Exclude } from "class-transformer";
 import { User } from "../user.entity";
 import { IsString } from "class-validator";
+import { Field, InputType } from "@nestjs/graphql";
 
 interface UpdateDto {
 
@@ -9,16 +10,18 @@ interface UpdateDto {
 }
 
 
-
-export class UpdateUserDto extends User implements UpdateDto {
+@InputType()
+export class UpdateUserDto implements UpdateDto {
 
     @Exclude()
     email: string;
 
     @IsString()
+    @Field()
     name: string;
 
     @IsString()
+    @Field()
     password: string;
 
     @Exclude()

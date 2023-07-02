@@ -16,9 +16,16 @@ export class AnimeService {
         return { data: animes, count };
     }
 
+    async findAllAnimewithoutCount() {
+        return this.animeRepo.find({
+            relations: {
+                watchlist: true,
+            }
+        });
+    }
 
     async findAnime(id: number) {
-        const anime = await this.animeRepo.findOneBy({ id })
+        const anime = await this.animeRepo.findOne({ where: { id }, relations: { watchlist: true } })
         return anime
     }
 

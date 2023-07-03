@@ -2,6 +2,8 @@ import { Controller, Get, Param, HttpException, HttpStatus, Patch, Body, UseInte
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { ExcludeProperties } from '../interceptors/update-interceptor';
+import { UserInterceptor } from './interceptors/user-res.interceptor';
+import { ResponseDto } from './dtos/response-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -10,6 +12,7 @@ export class UserController {
 
     }
     @Get('all')
+    @UseInterceptors(new UserInterceptor(ResponseDto))
     async getAllUsers() {
 
         return await this.userService.findAllUsers()

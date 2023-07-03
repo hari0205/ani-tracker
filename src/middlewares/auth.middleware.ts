@@ -20,9 +20,7 @@ export class AuthMiddleware implements NestMiddleware {
     async use(req: Request, res: Response, next: (error?: NextFunction) => void) {
 
         const token = req.cookies.authoization;
-
         if (token) {
-
             try {
                 const decodedToken = await this.jwtService.verifyAsync(token);
                 req.user = await this.userRepo.findOne({ where: { id: decodedToken.id } })

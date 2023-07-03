@@ -24,7 +24,7 @@ export class AuthController {
     async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
         const token = await this.authService.login(loginDto);
         if (!token) throw new HttpException("User not found", HttpStatus.NOT_FOUND)
-        res.cookie("Authoization", token, { maxAge: 1000 * 60 * 60 * 24, httpOnly: true })
+        res.cookie("authoization", token, { maxAge: 1000 * 60 * 60 * 24, httpOnly: true })
         return {
             "statusCode": HttpStatus.OK,
             "message": "Login successful!",

@@ -8,7 +8,6 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { AnimeModule } from './anime/anime.module';
 import { WatchlistModule } from './watchlist/watchlist.module';
-import { AuthMiddleware } from './middlewares/auth.middleware';
 import { User } from './user/user.entity';
 
 
@@ -34,15 +33,11 @@ declare global {
         autoSchemaFile: true,
         playground: true
       }),
-    TypeOrmModule.forFeature([User])
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes({ path: "/anime", method: RequestMethod.GET })
-  }
+export class AppModule {
 
 }

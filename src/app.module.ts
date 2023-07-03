@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -8,7 +8,17 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { AnimeModule } from './anime/anime.module';
 import { WatchlistModule } from './watchlist/watchlist.module';
-import { JwtModule } from '@nestjs/jwt';
+import { AuthMiddleware } from './middlewares/auth.middleware';
+import { User } from './user/user.entity';
+
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User
+    }
+  }
+}
 
 @Module({
   imports: [AuthModule, UserModule, AnimeModule, WatchlistModule,
@@ -24,9 +34,15 @@ import { JwtModule } from '@nestjs/jwt';
         autoSchemaFile: true,
         playground: true
       }),
+    TypeOrmModule.forFeature([User])
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
+
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes({ path: "/anime", method: RequestMethod.GET })
+  }
+
 }

@@ -9,6 +9,9 @@ import { User } from "../user.entity";
 export class ResponseDto implements Omit<Partial<User>, "password"> {
 
     @Expose()
+    id?: string;
+
+    @Expose()
     name?: string;
 
     @Expose()

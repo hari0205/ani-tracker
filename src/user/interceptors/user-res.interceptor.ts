@@ -19,7 +19,7 @@ import { ClassConstructor, plainToInstance } from "class-transformer";
 @Injectable()
 export class UserInterceptor<T> implements NestInterceptor {
     constructor(private dto: ClassConstructor<T>) { }
-    intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    intercept(context: ExecutionContext, next: CallHandler): Observable<T> {
 
         return next.handle().pipe(map(data => plainToInstance(this.dto, data, { excludeExtraneousValues: true })));
     }

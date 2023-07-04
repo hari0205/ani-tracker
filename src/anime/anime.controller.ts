@@ -1,13 +1,17 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, HttpException } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, HttpException, UseGuards } from '@nestjs/common';
 import { AnimeService } from './anime.service';
 import { CreateAnimeDto } from './dtos/create-anime.dto';
 import { UpdateAnimeDto } from './dtos/update-anime.dto';
+import { Roles } from '../decorators/role.decorator';
+import { RolesGuard } from '../guards/role-guard';
 
 @Controller('anime')
 export class AnimeController {
     constructor(private readonly animeService: AnimeService) { }
 
     @Post()
+    @Roles("admin")
+    @UseGuards(RolesGuard)
     async createAnime(@Body() createAnime: CreateAnimeDto) {
         return this.animeService.addAnime(createAnime);
     }

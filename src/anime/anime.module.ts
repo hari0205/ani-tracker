@@ -16,6 +16,6 @@ import { JwtService } from '@nestjs/jwt';
 
 export class AnimeModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('/anime');
+    consumer.apply(AuthMiddleware).forRoutes("/anime")
   }
 }

@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm"
 import { User } from './user.entity';
 import { Repository, getRepository } from 'typeorm';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -10,9 +11,9 @@ export class UserService {
     }
 
 
-    async create_user({ email, password, name }: { email: string, password: string, name: string }) {
+    async create_user(create: CreateUserDto) {
 
-        const new_user = this.userRepo.create({ email, password, name });
+        const new_user = this.userRepo.create(create);
 
         return await this.userRepo.save(new_user);
     }
@@ -22,8 +23,8 @@ export class UserService {
         const userQuery = this.userRepo.createQueryBuilder("user");
         userQuery
             .leftJoinAndSelect('user.animesWatching', 'watchlist') // LEFTJOIN 
-            .leftJoinAndSelect('watchlist.anime', 'anime')
-            .select(['user.id', 'user.name', 'watchlist.id', 'watchlist.status', 'anime.id', 'anime.name'])
+            .leftJoinAndSelect('watchlist.anime', 'anime')          // LEFTJOIN
+            .select(['user.id', 'user.name', 'user.role', 'watchlist.id', 'watchlist.status', 'anime.id', 'anime.name'])
             .where('user.id = :userId', { userId: id })
 
         return userQuery.getOne();

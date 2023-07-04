@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable, NestMiddleware, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { NextFunction, Request, Response } from "express";
 import { User } from "../user/user.entity";
@@ -19,19 +19,24 @@ export class AuthMiddleware implements NestMiddleware {
         @InjectRepository(User) private userRepo: Repository<User>) { }
     async use(req: Request, res: Response, next: (error?: NextFunction) => void) {
 
-        const token = req.cookies.authoization;
+        const token = req.cookies.authoization as string;
         if (token) {
+
             try {
-                const decodedToken = await this.jwtService.verifyAsync(token);
-                req.user = await this.userRepo.findOne({ where: { id: decodedToken.id } })
+                const decodedToken = await this.jwtService.verifyAsync(token, { secret: `SomeSecret` });
+                const curruser = await this.userRepo.findOne({ where: { id: decodedToken.userId } })
+                if (!curruser) throw new NotFoundException("Unable to verify user")
+                req.user = curruser;
                 next()
             } catch {
-                throw new BadRequestException('Invalid token signature');
+                throw new BadRequestException("Incorrect token")
             }
 
-        }
 
-        throw new UnauthorizedException("No token found")
+        }
+        else {
+            throw new UnauthorizedException("No token found")
+        }
 
     }
 

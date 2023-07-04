@@ -12,12 +12,13 @@ export class AnimeService {
     }
 
     async findAllAnime() {
-        const [animes, count] = await this.animeRepo.findAndCount();
+        const [animes, count] = await this.animeRepo.findAndCount({ order: { name: "ASC" } });
         return { data: animes, count };
     }
 
     async findAllAnimewithoutCount() {
         return this.animeRepo.find({
+            order: { name: "ASC" },
             relations: {
                 watchlist: true,
             }

@@ -26,6 +26,10 @@ export class User {
     @Field()
     password: string;
 
+    @Column({ default: "user" })
+    @Field()
+    role: string;
+
     @CreateDateColumn({ select: false })
     @Field(() => GraphQLISODateTime)
     createdAt: Date;

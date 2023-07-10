@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID, Int } from "@nestjs/graphql";
+import { ObjectType, Field, ID, Int, Float } from "@nestjs/graphql";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Watchlist } from "../watchlist/watchlist.entity";
 
@@ -26,6 +26,14 @@ export class Anime {
     @Column()
     @Field()
     description: string;
+
+    @Column({ type: "float", default: 0.0 })
+    @Field(() => Float)
+    rating: number;
+
+    @Column({ type: "int", default: 0 })
+    @Field(() => Int)
+    ratedBy: number;
 
     @Column()
     @Field()

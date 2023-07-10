@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post, Req } from '@nestjs/common';
 import { WatchlistService } from './watchlist.service';
 import { CreateWatchListDto } from './dtos/create-watchlis.dto';
 import { UpdateWatchListDto } from './dtos/update-watchlist.dto';
 import { Watchlist } from './watchlist.entity';
+import { Request } from 'express';
 
 @Controller('watchlist')
 export class WatchlistController {
@@ -10,10 +11,10 @@ export class WatchlistController {
     constructor(private readonly watchlistService: WatchlistService) { }
 
     @Get()
-    async getWatchAlllist() {
+    async getAllList() {
         const [watchlists, count]: [Watchlist[], number] = await this.watchlistService.getAllWatchlistwithCount()
         const filteredWatchlist = await Promise.all(watchlists.map(async (watchlist) => {
-            const { id, status, user, anime } = watchlist;
+            const { id, status, progress, rating, user, anime } = watchlist;
 
             const resolvedUser = await user
             const userObj = { id: resolvedUser.id, name: resolvedUser.name }
@@ -21,7 +22,7 @@ export class WatchlistController {
             const resolvedAnime = await anime
             const animeObj = { id: resolvedAnime.id, name: resolvedAnime.name }
 
-            return { id, status, user: userObj, anime: animeObj };
+            return { id, status, progress, rating, user: userObj, anime: animeObj };
         })
 
         )
@@ -40,7 +41,9 @@ export class WatchlistController {
     }
 
     @Post()
-    async CreateWatchList(@Body() createWatchList: CreateWatchListDto) {
+    async CreateWatchList(@Body() createWatchList: CreateWatchListDto, @Req() req: Request) {
+
+        Object.assign(createWatchList, { userId: req.user.id });
         return await this.watchlistService.createWatchlist(createWatchList);
     }
 

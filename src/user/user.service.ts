@@ -38,7 +38,8 @@ export class UserService {
     }
 
     async findAllUserswithCount() {
-        const [users, count] = await this.userRepo.findAndCount()
+        const [users, count] = await this.userRepo.findAndCount({
+        })
         return { users, count };
     }
 

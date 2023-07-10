@@ -26,6 +26,8 @@ declare global {
       database: 'dev_db.sqlite',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+      logger: "advanced-console",
+      logging: true
     })
     , GraphQLModule.forRoot<ApolloDriverConfig>(
       {

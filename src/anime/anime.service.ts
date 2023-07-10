@@ -4,10 +4,12 @@ import { Anime } from './anime.entity';
 import { Repository } from 'typeorm';
 import { CreateAnimeDto } from './dtos/create-anime.dto';
 import { UpdateAnimeDto } from './dtos/update-anime.dto';
+import { Watchlist } from '../watchlist/watchlist.entity';
 
 @Injectable()
 export class AnimeService {
-    constructor(@InjectRepository(Anime) private readonly animeRepo: Repository<Anime>) {
+    constructor(@InjectRepository(Anime) private readonly animeRepo: Repository<Anime>,
+        @InjectRepository(Watchlist) private readonly watchlistRepo: Repository<Watchlist>) {
 
     }
 
@@ -26,10 +28,22 @@ export class AnimeService {
     }
 
     async findAnime(id: number) {
-        const anime = await this.animeRepo.findOne({ where: { id }, relations: { watchlist: true } })
-        return anime
-    }
+        // TODO: Refactor this later
+        const averageRating = await this.animeRepo
+            .createQueryBuilder('anime')
+            .leftJoin('anime.watchlist', 'watchlist')
+            .select('AVG(CASE WHEN watchlist.rating >0 THEN watchlist.rating ELSE NULL END)', 'averageRating')
+            .where('anime.id = :id', { id })
+            .getRawOne()
 
+
+
+
+        await this.animeRepo.createQueryBuilder().update(Anime).set({ rating: averageRating.averageRating }).where("id = :id", { id }).execute()
+        return await this.animeRepo.findOne({ where: { id }, relations: { watchlist: true } })
+
+
+    }
     async addAnime(body: CreateAnimeDto) {
         const newanime = this.animeRepo.create(body);
         return await this.animeRepo.save(newanime)

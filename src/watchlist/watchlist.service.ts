@@ -1,10 +1,11 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Watchlist } from './watchlist.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
 import { Anime } from '../anime/anime.entity';
 import { UpdateWatchListDto } from './dtos/update-watchlist.dto';
+import { CreateWatchListDto } from './dtos/create-watchlis.dto';
 
 @Injectable()
 export class WatchlistService {
@@ -40,21 +41,30 @@ export class WatchlistService {
         return watchlist;
     }
 
-    async createWatchlist({ status, animeId, userId }: { status: string, animeId: number, userId: string }) {
-        const anime = await this.animeRepo.findOneBy({ id: animeId })
+    async createWatchlist(CreateWatchList: CreateWatchListDto) {
+        const anime = await this.animeRepo.findOneBy({ id: CreateWatchList.animeId })
+        let rating = 0
         if (!anime) {
             throw new NotFoundException({ statusCode: 404, message: "Anime not found." })
 
         }
 
-        const user = await this.userRepo.findOneBy({ id: userId })
+        const user = await this.userRepo.findOneBy({ id: CreateWatchList.userId })
         if (!user) {
             throw new NotFoundException({ statusCode: 404, message: "User not found." })
 
         }
+        if ("progress" in CreateWatchList) {
+            if (CreateWatchList.progress > anime.totalEpisodes) {
+                throw new BadRequestException("Progress must be less than or equal to total episodes")
+            }
+        }
+        if ("rating" in CreateWatchList) rating = CreateWatchList.rating
 
         const watchlist = this.watchListRepo.create()
-        watchlist.status = status
+        watchlist.status = CreateWatchList.status
+        watchlist.progress = CreateWatchList.progress
+        watchlist.rating = rating
         watchlist.anime = Promise.resolve(anime)
         watchlist.user = Promise.resolve(user)
 

@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsUUID } from "class-validator";
+import { IsNumber, IsOptional, IsString, IsUUID, Max, Min, isNumber, max } from "class-validator";
 
 
 export class CreateWatchListDto {
@@ -7,8 +7,17 @@ export class CreateWatchListDto {
     status: string;
 
     @IsNumber()
+    progress?: number;
+
+    @IsNumber()
     animeId: number;
 
     @IsUUID()
+    @IsOptional()
     userId: string;
+
+    @IsNumber()
+    @Max(10)
+    @IsOptional()
+    rating?: number;
 }

@@ -1,6 +1,6 @@
 import { User } from "../user/user.entity";
 import { Anime } from "../anime/anime.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 
 
@@ -17,6 +17,12 @@ export class Watchlist {
     @Field()
     status: string;                     // TODO: change to enum type when migrating to postgresql
 
+    @Column({ type: "int", default: 1 })
+    @Field(() => Int)
+    rating: number;
+
+    @Column({ type: "int", default: 0 })
+    progress: number;
 
     @ManyToOne(() => User, (user) => user.animesWatching)
     @Field(() => User)

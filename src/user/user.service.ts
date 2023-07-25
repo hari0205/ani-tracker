@@ -37,10 +37,11 @@ export class UserService {
         return user;
     }
 
-    async findAllUserswithCount() {
-        const [users, count] = await this.userRepo.findAndCount({
+    async findAllUserswithCount(skip: number, take: number) {
+        const [users, count]: [User[], number] = await this.userRepo.findAndCount({
+            order: { name: "ASC" }, skip, take
         })
-        return { users, count };
+        return [users, count];
     }
 
     async findAllUsers() {

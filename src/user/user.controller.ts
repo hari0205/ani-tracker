@@ -1,9 +1,11 @@
-import { Controller, Get, Param, HttpException, HttpStatus, Patch, Body, UseInterceptors, Delete } from '@nestjs/common';
+import { Controller, Get, Param, HttpException, HttpStatus, Patch, Body, UseInterceptors, Delete, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { ExcludeProperties } from '../interceptors/update-interceptor';
 import { UserInterceptor } from './interceptors/user-res.interceptor';
 import { ResponseDto } from './dtos/response-user.dto';
+import { PaginationDto } from './dtos/pagination.dto';
+import { User } from './user.entity';
 
 @Controller('user')
 export class UserController {
@@ -13,9 +15,12 @@ export class UserController {
     }
     @Get('all')
     @UseInterceptors(new UserInterceptor(ResponseDto))
-    async getAllUsers() {
-
-        return await this.userService.findAllUsers()
+    async getAllUsers(@Query() PaginationDto: PaginationDto) {
+        const { page, limit } = PaginationDto
+        const skip: number = (page - 1) * limit;
+        const itemsPerPage: number = limit;
+        const [users, count] = await this.userService.findAllUserswithCount(skip, itemsPerPage)
+        return { users, count, skip, limit }
     }
 
     @Get(":id")

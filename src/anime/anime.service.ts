@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Anime } from './anime.entity';
 import { Repository } from 'typeorm';
 import { CreateAnimeDto } from './dtos/create-anime.dto';
 import { UpdateAnimeDto } from './dtos/update-anime.dto';
 import { Watchlist } from '../watchlist/watchlist.entity';
+
 
 @Injectable()
 export class AnimeService {
@@ -13,9 +14,9 @@ export class AnimeService {
 
     }
 
-    async findAllAnime() {
-        const [animes, count] = await this.animeRepo.findAndCount({ order: { name: "ASC" } });
-        return { data: animes, count };
+    async findAllAnime(skip?: number, limit?: number) {
+        const [animes, count] = await this.animeRepo.findAndCount({ order: { name: "ASC" }, skip, take: limit });
+        return { data: animes, total: count, limit, skip };
     }
 
     async findAllAnimewithoutCount() {

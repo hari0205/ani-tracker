@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestMiddleware, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod, NestModule } from '@nestjs/common';
 import { AnimeController } from './anime.controller';
 import { AnimeService } from './anime.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -17,6 +17,8 @@ import { Watchlist } from '../watchlist/watchlist.entity';
 
 export class AnimeModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes("/watchlist")
+    consumer.apply(AuthMiddleware).exclude({
+      path: "/anime", method: RequestMethod.GET,
+    }).forRoutes("/anime")
   }
 }

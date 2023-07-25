@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, HttpException, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, HttpException, UseGuards, Query } from '@nestjs/common';
 import { AnimeService } from './anime.service';
 import { CreateAnimeDto } from './dtos/create-anime.dto';
 import { UpdateAnimeDto } from './dtos/update-anime.dto';
 import { Roles } from '../decorators/role.decorator';
 import { RolesGuard } from '../guards/role-guard';
+import { PaginationDto } from './dtos/pagination.dto';
 
 @Controller('anime')
 export class AnimeController {
@@ -17,8 +18,11 @@ export class AnimeController {
     }
 
     @Get()
-    async getAllAnimes() {
-        return this.animeService.findAllAnime()
+    async getAllAnimes(@Query() paginationDto: PaginationDto) {
+        const { page, limit } = paginationDto;
+        const skip: number = (page - 1) * limit;
+        const itemsPerPage: number = limit;
+        return this.animeService.findAllAnime(skip, itemsPerPage)
     }
 
     @Get(":id")

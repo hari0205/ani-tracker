@@ -25,9 +25,10 @@ export class UserInterceptor<T> implements NestInterceptor {
 
         return next.handle().pipe(
             map((data) => {
-
-                const transformedUsers = data.users.map((user: User) => plainToInstance(ReponseUser, user));
-                data.users = transformedUsers;
+                if (Array.isArray(data.users) && data.users) {
+                    const transformedUsers: User[] = data.users.map((user: User) => plainToInstance(ReponseUser, user));
+                    data.users = transformedUsers;
+                }
                 const responseDto = plainToClass(this.dto, data, { excludeExtraneousValues: true });
                 return responseDto;
             })
